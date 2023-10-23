@@ -53,7 +53,7 @@ elif input_option == "CSV Upload":
 
 
     if email and country and institution and degree:
-        # Save user info to a local CSV
+
         user_info = pd.DataFrame([[email, country, institution, degree]],
                                  columns=['email', 'country', 'institution', 'degree'])
         user_info.to_csv('user_stats.csv', mode='a', header=False, index=False)
@@ -68,7 +68,7 @@ elif input_option == "CSV Upload":
 
                 st.write(df_uploaded)
 
-                # Download link for the CSV with predictions
+
                 import base64
 
                 def get_csv_download_link(df, filename="predictions.csv"):
