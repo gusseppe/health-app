@@ -2,10 +2,6 @@ import streamlit as st
 import pandas as pd
 from joblib import load
 
-
-pipeline = load('kmeans_pipeline_women.joblib')
-
-# Define the label mappings
 LABELS = {
     0: "aging",
     1: "cardiovascular",
@@ -19,6 +15,11 @@ st.write("""
 Use this app to predict your health category based on certain metrics!
 """)
 
+model_option = st.sidebar.radio("Choose gender model", ["Women", "Men"])
+if model_option == "Women":
+    pipeline = load('kmeans_pipeline_women.joblib')
+else:
+    pipeline = load('kmeans_pipeline_men.joblib')
 
 input_option = st.sidebar.radio("Choose input type", ["Manual", "CSV Upload"])
 
@@ -31,14 +32,9 @@ if input_option == "Manual":
     fglu = st.sidebar.slider("Fasting Glucose (FGLU) in mg/dL", 70, 140, 90, 1)
 
     if st.sidebar.button("Predict"):
-
         input_data = pd.DataFrame([[age, waist, sbp, dbp, tc, fglu]],
                                   columns=['age', 'waist', 'sbp', 'dbp', 'tc', 'fglu'])
-
-
         prediction = pipeline.predict(input_data)[0]
-
-
         st.subheader(f"Prediction: **{LABELS[prediction]}**")
         st.write("""
         This is a prediction based on KMeans clustering. Always consult with a healthcare professional for a comprehensive assessment.
@@ -51,9 +47,7 @@ elif input_option == "CSV Upload":
     institution = st.sidebar.text_input("Institution or Company")
     degree = st.sidebar.text_input("Degree")
 
-
     if email and country and institution and degree:
-
         user_info = pd.DataFrame([[email, country, institution, degree]],
                                  columns=['email', 'country', 'institution', 'degree'])
         user_info.to_csv('user_stats.csv', mode='a', header=False, index=False)
@@ -67,7 +61,6 @@ elif input_option == "CSV Upload":
                 df_uploaded['prediction'] = [LABELS[pred] for pred in predictions]
 
                 st.write(df_uploaded)
-
 
                 import base64
 
