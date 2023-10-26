@@ -2,6 +2,8 @@
 
 The KMeans Health Predictor is a Streamlit app that predicts health categories based on certain metrics. The app utilizes a KMeans clustering model to classify the data into one of the five categories: aging, cardiovascular, healthy, dysglycemia, and adiposity.
 
+Demo: https://health-app-predictor.streamlit.app/
+
 ## Features
 
 - **Manual Input**: Users can input individual data points manually using sliders and receive predictions in real-time.
