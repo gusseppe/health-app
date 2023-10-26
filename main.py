@@ -2,34 +2,44 @@ import streamlit as st
 import pandas as pd
 from joblib import load
 
-LABELS = {
+LABELS_MEN = {
+    0: "dysglycemia",
+    1: "aging",
+    2: "cardiovascular",
+    3: "adiposity",
+    4: "healthy",
+}
+
+LABELS_WOMEN = {
     0: "aging",
     1: "cardiovascular",
     2: "healthy",
     3: "dysglycemia",
-    4: "adiposity"
+    4: "adiposity",
 }
 
-st.title("KMeans Health Predictor")
+st.title("KMeans Obesity Phenotyping")
 st.write("""
-Use this app to predict your health category based on certain metrics!
+Use this app to predict your obesity phenotype based on selected cardiometabolic risk factors!
 """)
 
 model_option = st.sidebar.radio("Choose gender model", ["Women", "Men"])
 if model_option == "Women":
     pipeline = load('kmeans_pipeline_women.joblib')
+    LABELS = LABELS_WOMEN
 else:
     pipeline = load('kmeans_pipeline_men.joblib')
+    LABELS = LABELS_MEN
 
 input_option = st.sidebar.radio("Choose input type", ["Manual", "CSV Upload"])
 
 if input_option == "Manual":
-    age = st.sidebar.slider("Age", 10, 100, 25, 1)
-    waist = st.sidebar.slider("Waist Measurement (in cm)", 50, 150, 80, 1)
-    sbp = st.sidebar.slider("Systolic Blood Pressure (SBP)", 90, 200, 120, 1)
-    dbp = st.sidebar.slider("Diastolic Blood Pressure (DBP)", 60, 140, 80, 1)
-    tc = st.sidebar.slider("Total Cholesterol (TC) in mg/dL", 100, 300, 200, 1)
-    fglu = st.sidebar.slider("Fasting Glucose (FGLU) in mg/dL", 70, 140, 90, 1)
+    age = st.sidebar.slider("Age", 20, 85, 25, 1)
+    waist = st.sidebar.slider("Waist Measurement (in cm)", 30, 300, 80, 1)
+    sbp = st.sidebar.slider("Systolic Blood Pressure (SBP)", 70, 270, 120, 1)
+    dbp = st.sidebar.slider("Diastolic Blood Pressure (DBP)", 30, 150, 80, 1)
+    tc = st.sidebar.slider("Total Cholesterol (TC) in mg/dL", 67, 773, 200, 1)
+    fglu = st.sidebar.slider("Fasting Glucose (FGLU) in mg/dL", 36, 540, 90, 1)
 
     if st.sidebar.button("Predict"):
         input_data = pd.DataFrame([[age, waist, sbp, dbp, tc, fglu]],
@@ -37,7 +47,7 @@ if input_option == "Manual":
         prediction = pipeline.predict(input_data)[0]
         st.subheader(f"Prediction: **{LABELS[prediction]}**")
         st.write("""
-        This is a prediction based on KMeans clustering. Always consult with a healthcare professional for a comprehensive assessment.
+        This is a prediction based on KMeans clustering. **This is not clinical advice. Always seek professional health care and advice, and discuss any medical information you find online with your doctor.**
         """)
 
 elif input_option == "CSV Upload":
@@ -57,6 +67,12 @@ elif input_option == "CSV Upload":
         if uploaded_file:
             df_uploaded = pd.read_csv(uploaded_file)
             if all(col in df_uploaded.columns for col in ['age', 'waist', 'sbp', 'dbp', 'tc', 'fglu']):
+                df_uploaded = df_uploaded[(df_uploaded['age'].between(20, 85)) &
+                                          (df_uploaded['waist'].between(30, 300)) &
+                                          (df_uploaded['sbp'].between(70, 270)) &
+                                          (df_uploaded['dbp'].between(30, 150)) &
+                                          (df_uploaded['tc'].between(67, 773)) &
+                                          (df_uploaded['fglu'].between(36, 540))]
                 predictions = pipeline.predict(df_uploaded[['age', 'waist', 'sbp', 'dbp', 'tc', 'fglu']])
                 df_uploaded['prediction'] = [LABELS[pred] for pred in predictions]
 
