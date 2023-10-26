@@ -45,7 +45,8 @@ if input_option == "Manual":
         input_data = pd.DataFrame([[age, waist, sbp, dbp, tc, fglu]],
                                   columns=['age', 'waist', 'sbp', 'dbp', 'tc', 'fglu'])
         prediction = pipeline.predict(input_data)[0]
-        st.subheader(f"Prediction: **{LABELS[prediction]}**")
+        st.success(f"Prediction: **{LABELS[prediction]}**")
+        # st.subheader(f"Prediction: **{LABELS[prediction]}**")
         st.write("""
         This is a prediction based on KMeans clustering. **This is not clinical advice. Always seek professional health care and advice, and discuss any medical information you find online with your doctor.**
         """)
