@@ -80,7 +80,9 @@ elif input_option == "CSV Upload":
                 st.write(df_uploaded)
 
                 import base64
-
+                st.write("""
+                This is a prediction based on KMeans clustering. **This is not clinical advice. Always seek professional health care and advice, and discuss any medical information you find online with your doctor.**
+                """)
                 def get_csv_download_link(df, filename="predictions.csv"):
                     csv = df.to_csv(index=False)
                     b64 = base64.b64encode(csv.encode()).decode()
